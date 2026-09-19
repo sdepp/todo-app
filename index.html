@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do App</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 40px auto; }
+    li { cursor: pointer; margin: 6px 0; }
+    li.done { text-decoration: line-through; color: gray; }
+  </style>
+</head>
+<body>
+  <h1>My To-Do List</h1>
+  <input id="task" placeholder="New task">
+  <button onclick="addTask()">Add</button>
+  <ul id="list"></ul>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+
+    function save() { localStorage.setItem("tasks", JSON.stringify(tasks)); render(); }
+
+    function addTask() {
+      const input = document.getElementById("task");
+      if (!input.value.trim()) return;
+      tasks.push({ text: input.value, done: false });
+      input.value = "";
+      save();
+    }
+
+    function toggle(i) { tasks[i].done = !tasks[i].done; save(); }
+    function remove(i) { tasks.splice(i, 1); save(); }
+
+    function render() {
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+      tasks.forEach((t, i) => {
+        const li = document.createElement("li");
+        li.textContent = t.text + " ";
+        if (t.done) li.className = "done";
+        li.onclick = () => toggle(i);
+        const del = document.createElement("button");
+        del.textContent = "x";
+        del.onclick = (e) => { e.stopPropagation(); remove(i); };
+        li.appendChild(del);
+        list.appendChild(li);
+      });
+    }
+    render();
+  </script>
+</body>
+</html>
